@@ -1,4 +1,4 @@
-package revelmongo
+package revelmgo
 
 import (
 	"fmt"
