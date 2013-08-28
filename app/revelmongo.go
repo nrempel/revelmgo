@@ -10,18 +10,37 @@ import (
 
 var (
 	Session *mgo.Session
-	Method  string
 	Url     string
 )
 
 func Init() {
+
 	var found bool
+	if Url, found = revel.Config.String("mongo.url"); !found {
+		revel.ERROR.Fatal("No mongo.url found.")
+	}
+
+	var err error
+	if Session, err = mgo.Dial(Url); err != nil {
+		revel.ERROR.Panic(err)
+	}
 
 }
+
+const (
+	New   = 0
+	Copy  = 1
+	Clone = 1
+)
 
 type Session struct {
 	*revel.Controller
 	Session *mgo.Session
+	Method  int
+}
+
+func SetMethod(method int) {
+
 }
 
 func (c *Session) Begin() {
