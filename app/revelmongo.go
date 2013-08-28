@@ -1,7 +1,6 @@
 package revelmongo
 
 import (
-	"errors"
 	"fmt"
 	"github.com/robfig/revel"
 	"labix.org/v2/mgo"
@@ -11,6 +10,7 @@ import (
 var (
 	Session *mgo.Session
 	Url     string
+	Method  string
 )
 
 func Init() {
@@ -20,6 +20,10 @@ func Init() {
 		revel.ERROR.Fatal("No mongo.url found.")
 	}
 
+	if Method, found = revel.Config.String("mongo.method"); !found {
+		revel.Error.Fatal("No mongo.method found")
+	}
+
 	var err error
 	if Session, err = mgo.Dial(Url); err != nil {
 		revel.ERROR.Panic(err)
@@ -27,31 +31,33 @@ func Init() {
 
 }
 
-const (
-	New   = 0
-	Copy  = 1
-	Clone = 1
-)
-
-type Session struct {
+type Controller struct {
 	*revel.Controller
-	Session *mgo.Session
-	Method  int
+	MongoSession *mgo.Session
 }
 
-func SetMethod(method int) {
+func (c *Controller) Begin() {
 
+	switch Method {
+	case "new":
+		MongoSession = Session.New()
+	case "copy":
+		MongoSession = Session.Copy()
+	case "clone":
+		MongoSession = Session.Clone()
+	default:
+		revel.Error.Fatal(fmt.Sprintf(
+			"Invalid mongo.method: %s.\nUse new, copy, or clone.",
+			Method))
+	}
 }
 
-func (c *Session) Begin() {
-
-}
-
-func (c *Session) End() {
-
+func (c *Controller) End() {
+	Session.Close()
+	c.MongoSession.Close()
 }
 
 func init() {
-	revel.InterceptMethod((*Session).Begin, revel.BEFORE)
-	revel.InterceptMethod((*Session).End, revel.FINALLY)
+	revel.InterceptMethod((*Controller).Begin, revel.BEFORE)
+	revel.InterceptMethod((*Controller).End, revel.FINALLY)
 }
