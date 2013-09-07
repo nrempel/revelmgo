@@ -15,11 +15,11 @@ var (
 func Init() {
 	var found bool
 	if Url, found = revel.Config.String("mongo.url"); !found {
-		revel.ERROR.Fatal("No mongo.url found.")
+		revel.ERROR.Fatal("No mongo.url found")
 	}
 
 	if Method, found = revel.Config.String("mongo.method"); !found {
-		revel.Error.Fatal("No mongo.method found")
+		revel.ERROR.Fatal("No mongo.method found")
 	}
 
 	var err error
