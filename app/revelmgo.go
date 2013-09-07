@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/robfig/revel"
 	"labix.org/v2/mgo"
-	"labix.org/v2/mgo/bson"
 )
 
 var (
@@ -14,7 +13,6 @@ var (
 )
 
 func Init() {
-
 	var found bool
 	if Url, found = revel.Config.String("mongo.url"); !found {
 		revel.ERROR.Fatal("No mongo.url found.")
@@ -28,7 +26,6 @@ func Init() {
 	if Session, err = mgo.Dial(Url); err != nil {
 		revel.ERROR.Panic(err)
 	}
-
 }
 
 type Controller struct {
@@ -37,7 +34,6 @@ type Controller struct {
 }
 
 func (c *Controller) Begin() {
-
 	switch Method {
 	case "new":
 		MongoSession = Session.New()
