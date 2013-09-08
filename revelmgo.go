@@ -1,6 +1,7 @@
 package revelmgo
 
 import (
+	"fmt"
 	"github.com/robfig/revel"
 	"labix.org/v2/mgo"
 )
@@ -13,8 +14,10 @@ var (
 func Init() {
 	var found bool
 	if Url, found = revel.Config.String("mgo.url"); !found {
-		revel.ERROR.Fatal("No mgo.url found")
+		revel.ERROR.Panic("No mgo.url found")
 	}
+
+	revel.INFO.Println(fmt.Sprintf("Dialing url: %s", Url))
 
 	var err error
 	if Session, err = mgo.Dial(Url); err != nil {
