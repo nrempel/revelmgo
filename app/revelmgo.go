@@ -14,12 +14,12 @@ var (
 
 func Init() {
 	var found bool
-	if Url, found = revel.Config.String("mongo.url"); !found {
-		revel.ERROR.Fatal("No mongo.url found")
+	if Url, found = revel.Config.String("mgo.url"); !found {
+		revel.ERROR.Fatal("No mgo.url found")
 	}
 
-	if Method, found = revel.Config.String("mongo.method"); !found {
-		revel.ERROR.Fatal("No mongo.method found")
+	if Method, found = revel.Config.String("mgo.method"); !found {
+		revel.ERROR.Fatal("No mgo.method found")
 	}
 
 	var err error
@@ -30,20 +30,20 @@ func Init() {
 
 type Controller struct {
 	*revel.Controller
-	MongoSession *mgo.Session
+	MgoSession *mgo.Session
 }
 
 func (c *Controller) Begin() revel.Result {
 	switch Method {
 	case "new":
-		c.MongoSession = Session.New()
+		c.MgoSession = Session.New()
 	case "copy":
-		c.MongoSession = Session.Copy()
+		c.MgoSession = Session.Copy()
 	case "clone":
-		c.MongoSession = Session.Clone()
+		c.MgoSession = Session.Clone()
 	default:
 		revel.ERROR.Fatal(fmt.Sprintf(
-			"Invalid mongo.method: %s.\nUse new, copy, or clone.",
+			"Invalid mgo.method: %s.\nUse new, copy, or clone.",
 			Method))
 	}
 	return nil
@@ -51,7 +51,7 @@ func (c *Controller) Begin() revel.Result {
 
 func (c *Controller) End() revel.Result {
 	Session.Close()
-	c.MongoSession.Close()
+	c.MgoSession.Close()
 	return nil
 }
 
