@@ -28,12 +28,12 @@ func Init() {
 	}
 }
 
-type Controller struct {
+type MgoController struct {
 	*revel.Controller
 	MgoSession *mgo.Session
 }
 
-func (c *Controller) Begin() revel.Result {
+func (c *MgoController) Begin() revel.Result {
 	switch Method {
 	case "new":
 		c.MgoSession = Session.New()
@@ -49,13 +49,13 @@ func (c *Controller) Begin() revel.Result {
 	return nil
 }
 
-func (c *Controller) End() revel.Result {
+func (c *MgoController) End() revel.Result {
 	Session.Close()
 	c.MgoSession.Close()
 	return nil
 }
 
 func init() {
-	revel.InterceptMethod((*Controller).Begin, revel.BEFORE)
-	revel.InterceptMethod((*Controller).End, revel.FINALLY)
+	revel.InterceptMethod((*MgoController).Begin, revel.BEFORE)
+	revel.InterceptMethod((*MgoController).End, revel.FINALLY)
 }
