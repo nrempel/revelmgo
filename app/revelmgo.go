@@ -42,7 +42,7 @@ func (c *Controller) Begin() {
 	case "clone":
 		c.MongoSession = Session.Clone()
 	default:
-		revel.Error.Fatal(fmt.Sprintf(
+		revel.ERROR.Fatal(fmt.Sprintf(
 			"Invalid mongo.method: %s.\nUse new, copy, or clone.",
 			Method))
 	}
