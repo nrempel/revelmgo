@@ -36,11 +36,11 @@ type Controller struct {
 func (c *Controller) Begin() {
 	switch Method {
 	case "new":
-		MongoSession = Session.New()
+		c.MongoSession = Session.New()
 	case "copy":
-		MongoSession = Session.Copy()
+		c.MongoSession = Session.Copy()
 	case "clone":
-		MongoSession = Session.Clone()
+		c.MongoSession = Session.Clone()
 	default:
 		revel.Error.Fatal(fmt.Sprintf(
 			"Invalid mongo.method: %s.\nUse new, copy, or clone.",
