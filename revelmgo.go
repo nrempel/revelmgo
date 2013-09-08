@@ -13,6 +13,7 @@ var (
 )
 
 func Init() {
+
 	var found bool
 	if Url, found = revel.Config.String("mgo.url"); !found {
 		revel.ERROR.Fatal("No mgo.url found")
@@ -33,20 +34,16 @@ type MgoController struct {
 	MgoSession *mgo.Session
 }
 
-func (c *MgoController) Begin() revel.Result {
-	switch Method {
-	case "new":
-		c.MgoSession = Session.New()
-	case "copy":
-		c.MgoSession = Session.Copy()
-	case "clone":
-		c.MgoSession = Session.Clone()
-	default:
-		revel.ERROR.Fatal(fmt.Sprintf(
-			"Invalid mgo.method: %s.\nUse new, copy, or clone.",
-			Method))
-	}
-	return nil
+func (c *MgoController) New() {
+	c.MgoSession = Session.New()
+}
+
+func (c *MgoController) Copy() {
+	c.MgoSession = Session.Copy()
+}
+
+func (c *MgoController) Clone() {
+	c.MgoSession = Session.Clone()
 }
 
 func (c *MgoController) End() revel.Result {
@@ -56,6 +53,5 @@ func (c *MgoController) End() revel.Result {
 }
 
 func init() {
-	revel.InterceptMethod((*MgoController).Begin, revel.BEFORE)
 	revel.InterceptMethod((*MgoController).End, revel.FINALLY)
 }
