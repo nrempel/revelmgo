@@ -33,7 +33,7 @@ type Controller struct {
 	MongoSession *mgo.Session
 }
 
-func (c *Controller) Begin() {
+func (c *Controller) Begin() revel.Result {
 	switch Method {
 	case "new":
 		c.MongoSession = Session.New()
@@ -46,11 +46,13 @@ func (c *Controller) Begin() {
 			"Invalid mongo.method: %s.\nUse new, copy, or clone.",
 			Method))
 	}
+	return nil
 }
 
-func (c *Controller) End() {
+func (c *Controller) End() revel.Result {
 	Session.Close()
 	c.MongoSession.Close()
+	return nil
 }
 
 func init() {
