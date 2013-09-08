@@ -11,7 +11,6 @@ var (
 )
 
 func Init() {
-
 	var found bool
 	if Url, found = revel.Config.String("mgo.url"); !found {
 		revel.ERROR.Fatal("No mgo.url found")
@@ -30,17 +29,14 @@ type MgoController struct {
 
 func New() {
 	revel.InterceptMethod((*MgoController).new, revel.BEFORE)
-	revel.InterceptMethod((*MgoController).close, revel.FINALLY)
 }
 
 func Copy() {
 	revel.InterceptMethod((*MgoController).copy, revel.BEFORE)
-	revel.InterceptMethod((*MgoController).close, revel.FINALLY)
 }
 
 func Clone() {
 	revel.InterceptMethod((*MgoController).clone, revel.BEFORE)
-	revel.InterceptMethod((*MgoController).close, revel.FINALLY)
 }
 
 func (c *MgoController) new() revel.Result {
@@ -59,7 +55,10 @@ func (c *MgoController) clone() revel.Result {
 }
 
 func (c *MgoController) close() revel.Result {
-	revel.INFO.Println("HERE")
 	c.MgoSession.Close()
 	return nil
+}
+
+func init() {
+	revel.InterceptMethod((*MgoController).close, revel.FINALLY)
 }
