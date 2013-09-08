@@ -1,7 +1,6 @@
 package revelmgo
 
 import (
-	"fmt"
 	"github.com/robfig/revel"
 	"labix.org/v2/mgo"
 )
@@ -9,7 +8,6 @@ import (
 var (
 	Session *mgo.Session
 	Url     string
-	Method  string
 )
 
 func Init() {
@@ -17,10 +15,6 @@ func Init() {
 	var found bool
 	if Url, found = revel.Config.String("mgo.url"); !found {
 		revel.ERROR.Fatal("No mgo.url found")
-	}
-
-	if Method, found = revel.Config.String("mgo.method"); !found {
-		revel.ERROR.Fatal("No mgo.method found")
 	}
 
 	var err error
@@ -34,24 +28,38 @@ type MgoController struct {
 	MgoSession *mgo.Session
 }
 
-func (c *MgoController) New() {
+func New() {
+	revel.InterceptMethod((*MgoController).new, revel.BEFORE)
+	revel.InterceptMethod((*MgoController).close, revel.FINALLY)
+}
+
+func Copy() {
+	revel.InterceptMethod((*MgoController).copy, revel.BEFORE)
+	revel.InterceptMethod((*MgoController).close, revel.FINALLY)
+}
+
+func Clone() {
+	revel.InterceptMethod((*MgoController).clone, revel.BEFORE)
+	revel.InterceptMethod((*MgoController).close, revel.FINALLY)
+}
+
+func (c *MgoController) new() revel.Result {
 	c.MgoSession = Session.New()
-}
-
-func (c *MgoController) Copy() {
-	c.MgoSession = Session.Copy()
-}
-
-func (c *MgoController) Clone() {
-	c.MgoSession = Session.Clone()
-}
-
-func (c *MgoController) End() revel.Result {
-	Session.Close()
-	c.MgoSession.Close()
 	return nil
 }
 
-func init() {
-	revel.InterceptMethod((*MgoController).End, revel.FINALLY)
+func (c *MgoController) copy() revel.Result {
+	c.MgoSession = Session.Copy()
+	return nil
+}
+
+func (c *MgoController) clone() revel.Result {
+	c.MgoSession = Session.Clone()
+	return nil
+}
+
+func (c *MgoController) close() revel.Result {
+	revel.INFO.Println("HERE")
+	c.MgoSession.Close()
+	return nil
 }
